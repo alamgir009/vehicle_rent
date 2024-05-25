@@ -5,5 +5,5 @@ const vehicleTypeSchema = new mongoose.Schema({
   model: { type: mongoose.Schema.Types.ObjectId, ref: "vehicle" },
 });
 
-const vehicleModel = mongoose.model("vehicleType", vehicleTypeSchema);
-module.exports = vehicleModel;
+const vehicleTypeModel = mongoose.model("vehicleType", vehicleTypeSchema);
+module.exports = vehicleTypeModel;

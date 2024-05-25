@@ -1,8 +1,8 @@
-const vehicleTypesModel = require("../models/vehicle.js");
+const vehicleTypeModel = require("../models/vehicleType.js");
 
 const vehicleTypeController = async (req, res) => {
   try {
-    const vehicleTypes = await vehicleTypesModel.find().populate("vehicles");
+    const vehicleTypes = await vehicleTypeModel.find();
 
     return res.status(200).json(vehicleTypes);
   } catch (error) {
