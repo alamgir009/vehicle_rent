@@ -5,28 +5,33 @@ const bookingController = async (req, res) => {
     const { firstName, lastName, vehicle, bookingDate } = req.body;
 
     // Check if the booking dates overlap with any existing bookings
+    // const existingBooking = await bookingModel.findOne({
+    //   vehicle,
+    //   $or: [
+    //     {
+    //       "bookingDate.startingDate": {
+    //         $lt: bookingDate.endingDate,
+    //         $gte: bookingDate.startingDate,
+    //       },
+    //     },
+    //     {
+    //       "bookingDate.endingDate": {
+    //         $gt: bookingDate.startingDate,
+    //         $lte: bookingDate.endingDate,
+    //       },
+    //     },
+    //     {
+    //       $and: [
+    //         { "bookingDate.startingDate": { $lte: bookingDate.startingDate } },
+    //         { "bookingDate.endingDate": { $gte: bookingDate.endingDate } },
+    //       ],
+    //     },
+    //   ],
+    // });
     const existingBooking = await bookingModel.findOne({
       vehicle,
-      $or: [
-        {
-          "bookingDate.startingDate": {
-            $lt: bookingDate.endingDate,
-            $gte: bookingDate.startingDate,
-          },
-        },
-        {
-          "bookingDate.endingDate": {
-            $gt: bookingDate.startingDate,
-            $lte: bookingDate.endingDate,
-          },
-        },
-        {
-          $and: [
-            { "bookingDate.startingDate": { $lte: bookingDate.startingDate } },
-            { "bookingDate.endingDate": { $gte: bookingDate.endingDate } },
-          ],
-        },
-      ],
+      "bookingDate.startingDate": { $lt: bookingDate.endingDate },
+      "bookingDate.endingDate": { $gt: bookingDate.startingDate },
     });
 
     if (existingBooking) {
