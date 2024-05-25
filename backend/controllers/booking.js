@@ -2,24 +2,29 @@ const bookingModel = require("../models/booking.js");
 
 const bookingController = async (req, res) => {
   try {
-    const { firstName, lastName, vehicle, bookingTime } = req.body;
+    const { firstName, lastName, vehicle, bookingDate } = req.body;
 
-    // Check if the booking time is available
+    // Check if the booking dates overlap with any existing bookings
     const existingBooking = await bookingModel.findOne({
       vehicle,
       $or: [
         {
-          "bookingTime.start": {
-            $gte: bookingTime.start,
-            $lt: bookingTime.end,
+          "bookingDate.startingDate": {
+            $lt: bookingDate.endingDate,
+            $gte: bookingDate.startingDate,
           },
         },
         {
-          "bookingTime.end": { $gt: bookingTime.start, $lte: bookingTime.end },
+          "bookingDate.endingDate": {
+            $gt: bookingDate.startingDate,
+            $lte: bookingDate.endingDate,
+          },
         },
         {
-          "bookingTime.start": { $lte: bookingTime.start },
-          "bookingTime.end": { $gte: bookingTime.end },
+          $and: [
+            { "bookingDate.startingDate": { $lte: bookingDate.startingDate } },
+            { "bookingDate.endingDate": { $gte: bookingDate.endingDate } },
+          ],
         },
       ],
     });
@@ -30,14 +35,14 @@ const bookingController = async (req, res) => {
         .json({ message: "Vehicle already booked for this time period" });
     }
 
-    const booking = new bookingModel({
+    const newBooking = new bookingModel({
       firstName,
       lastName,
       vehicle,
-      bookingTime,
+      bookingDate,
     });
 
-    const newBooking = await booking.save();
+    await newBooking.save();
     res.status(201).json(newBooking);
   } catch (err) {
     res.status(400).json({ message: err.message });
